@@ -1,0 +1,7 @@
+{
+  "name": "test-appium",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
