@@ -67,11 +67,11 @@ jobs:
       - name: Build iOS app with xcodebuild
         run: |
           echo "Starting iOS build..."
-          
+
           # Create a build log file for debugging
           cd ios/App
           mkdir -p build_logs
-          
+
           # Run the build with detailed output for debugging
           set -o pipefail && xcodebuild \
             -workspace App.xcworkspace \
@@ -87,11 +87,11 @@ jobs:
             ONLY_ACTIVE_ARCH=NO \
             BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
             2>&1 | tee build_logs/xcodebuild.log | xcpretty
-          
+
           echo "Build completed, saving build information..."
           # Save build settings for debugging
           xcodebuild -workspace App.xcworkspace -scheme App -showBuildSettings > build_logs/build_settings.log
-          
+
           # List the build products
           echo "Build products directory contents:"
           find ./DerivedData -name "*.app" -o -name "*.ipa" | tee build_logs/build_products.log
@@ -102,10 +102,10 @@ jobs:
           echo "App directory:"
           cd ios/App
           ls -la
-          
+
           echo "DerivedData build products:"
           find ./DerivedData -name "*.app" -o -name "*.ipa" | xargs -I{} ls -la {}
-          
+
           echo "=== App info ==="
           find ./DerivedData -name "Info.plist" | grep -v "Pods" | xargs -I{} plutil -p {}
 
@@ -118,7 +118,7 @@ jobs:
           exclude: |
             **/node_modules/**
             **/Pods/**
-            
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -128,7 +128,7 @@ jobs:
             ios/App/DerivedData/Build/Products/**/*.ipa
             ios/App/build_logs/
           if-no-files-found: warn
-          
+
       - name: Upload build diagnostics
         uses: actions/upload-artifact@v4
         with:
@@ -137,3 +137,8 @@ jobs:
             ios/App/DerivedData/Logs/
             ios/App/build_logs/
           if-no-files-found: warn
+
+      - name: Boot iOS Simulator
+        run: |
+          xcrun simctl boot "iPhone 15"
+          sleep 20 # attendre qu'il démarre

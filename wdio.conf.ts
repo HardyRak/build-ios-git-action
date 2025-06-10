@@ -22,7 +22,7 @@ export const config: WebdriverIO.Config = {
         'appium:automationName': 'XCUITest',
         'appium:deviceName': 'iPhone 15',
         'appium:platformVersion': '17.0',
-        'appium:app': '/path/to/your/app.app',
+        'appium:app': 'ios/App/DerivedData/Build/Products/Release-iphoneos/App.app',
       },
   ],
   bail: 0,
