@@ -1,3 +1,9 @@
+import path from 'path';
+
+const appPath = path.resolve(
+  './ios/App/DerivedData/Build/Products/Release-iphoneos/App.app'
+);
+
 export const config: WebdriverIO.Config = {
   runner: 'local',
   tsConfigPath: './tsconfig.json',
@@ -11,13 +17,13 @@ export const config: WebdriverIO.Config = {
   hostname: 'localhost',
   logLevel: 'info' as const,
   capabilities: [
-      {
-        platformName: 'iOS',
-        'appium:automationName': 'XCUITest',
-        'appium:deviceName': 'iPhone 15',
-        'appium:platformVersion': '17.0',
-        'appium:app': 'ios/App/DerivedData/Build/Products/Release-iphoneos/App.app',
-      },
+    {
+      platformName: 'iOS',
+      'appium:automationName': 'XCUITest',
+      'appium:deviceName': 'iPhone 15',
+      'appium:platformVersion': '17.0',
+      'appium:app': appPath,
+    },
   ],
   bail: 0,
   waitforTimeout: 10000,
@@ -27,7 +33,7 @@ export const config: WebdriverIO.Config = {
   framework: 'mocha',
   reporters: ['junit', 'allure'],
   mochaOpts: {
-      ui: 'bdd',
-      timeout: 60000,
+    ui: 'bdd',
+    timeout: 60000,
   },
 };
