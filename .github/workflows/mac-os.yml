@@ -24,14 +24,24 @@ jobs:
       - name: Build Ionic app
         run: npm run build
 
+      - name: Add iOS platform (if not present)
+        run: npx cap add ios || echo "iOS platform already added"
+
       - name: Sync Capacitor iOS project
         run: npx cap sync ios
 
+      - name: Move Podfile if inside ios/App
+        run: |
+          if [ -f ios/App/Podfile ]; then
+            mv ios/App/Podfile ios/
+          fi
+
       - name: Install CocoaPods dependencies
         run: |
-          cd ios/App
+          cd ios
           pod install
 
       - name: Build iOS app with xcodebuild
         run: |
-          xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        working-directory: ios
