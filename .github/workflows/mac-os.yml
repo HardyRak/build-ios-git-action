@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   build-ios:
@@ -16,10 +17,12 @@ jobs:
       - name: Setup Node.js LTS
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci || npm install
+        continue-on-error: false
 
       - name: Build Ionic app
         run: npm run build
@@ -30,10 +33,19 @@ jobs:
       - name: Sync Capacitor iOS project
         run: npx cap sync ios
 
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: ios/App/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Install CocoaPods dependencies
         run: |
           cd ios/App
           pod install
+        continue-on-error: false
 
       - name: Verification App
         run: |
@@ -44,13 +56,58 @@ jobs:
         run: |
           cd ios
           ls -all
+      - name: Cache Derived Data
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('ios/App/App.xcworkspace/**/*.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Build iOS app with xcodebuild
         run: |
-          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          echo "Starting iOS build..."
+          
+          # Create a build log file for debugging
+          cd ios/App
+          mkdir -p build_logs
+          
+          # Run the build with detailed output for debugging
+          set -o pipefail && xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath ./DerivedData \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
+            2>&1 | tee build_logs/xcodebuild.log | xcpretty
+          
+          echo "Build completed, saving build information..."
+          # Save build settings for debugging
+          xcodebuild -workspace App.xcworkspace -scheme App -showBuildSettings > build_logs/build_settings.log
+          
+          # List the build products
+          echo "Build products directory contents:"
+          find ./DerivedData -name "*.app" -o -name "*.ipa" | tee build_logs/build_products.log
+        continue-on-error: false
       - name: Verification build app or ipa
         run: |
-          cd ios/App/App
-          ls -all
+          echo "=== Checking build output directories ==="
+          echo "App directory:"
+          cd ios/App
+          ls -la
+          
+          echo "DerivedData build products:"
+          find ./DerivedData -name "*.app" -o -name "*.ipa" | xargs -I{} ls -la {}
+          
+          echo "=== App info ==="
+          find ./DerivedData -name "Info.plist" | grep -v "Pods" | xargs -I{} plutil -p {}
 
       - name: Upload project (excluding node_modules)
         uses: actions/upload-artifact@v4
@@ -60,5 +117,23 @@ jobs:
             .
           exclude: |
             **/node_modules/**
-
-
+            **/Pods/**
+            
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-artifacts
+          path: |
+            ios/App/DerivedData/Build/Products/**/*.app
+            ios/App/DerivedData/Build/Products/**/*.ipa
+            ios/App/build_logs/
+          if-no-files-found: warn
+          
+      - name: Upload build diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-diagnostics
+          path: |
+            ios/App/DerivedData/Logs/
+            ios/App/build_logs/
+          if-no-files-found: warn
