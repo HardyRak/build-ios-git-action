@@ -30,11 +30,6 @@ jobs:
       - name: Sync Capacitor iOS project
         run: npx cap sync ios
 
-      - name: Ensure CocoaPods is initialized
-        run: |
-          cd ios
-          npx pod-init
-
       - name: Install CocoaPods dependencies
         run: |
           cd ios
