@@ -51,3 +51,10 @@ jobs:
         run: |
           cd ios/App/App
           ls -all
+
+      - name: Upload entire project folder
+        uses: actions/upload-artifact@v3
+        with:
+          name: full-project
+          path: .
+
