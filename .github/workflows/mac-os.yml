@@ -34,7 +34,11 @@ jobs:
         run: |
           cd ios/App
           pod install
+      - name: Verification App
+        run: ls -all
 
+      - name: Verification ios
+        run: ls -all
       - name: Build iOS app with xcodebuild
         run: |
           xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
