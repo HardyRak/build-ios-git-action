@@ -50,4 +50,4 @@ jobs:
       - name: Verification build app or ipa
         run: |
           cd ios
-          l -all
+          ls -all
