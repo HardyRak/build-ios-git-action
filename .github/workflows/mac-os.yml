@@ -30,15 +30,9 @@ jobs:
       - name: Sync Capacitor iOS project
         run: npx cap sync ios
 
-      - name: Move Podfile if inside ios/App
-        run: |
-          if [ -f ios/App/Podfile ]; then
-            mv ios/App/Podfile ios/
-          fi
-
       - name: Install CocoaPods dependencies
         run: |
-          cd ios
+          cd ios/App
           pod install
 
       - name: Build iOS app with xcodebuild
