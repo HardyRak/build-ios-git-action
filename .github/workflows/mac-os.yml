@@ -46,5 +46,4 @@ jobs:
           ls -all
       - name: Build iOS app with xcodebuild
         run: |
-          cd pwd
           xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
