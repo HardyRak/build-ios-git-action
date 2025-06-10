@@ -47,3 +47,7 @@ jobs:
       - name: Build iOS app with xcodebuild
         run: |
           xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      - name: Verification build app or ipa
+        run: |
+          cd ios/build
+          l -all
