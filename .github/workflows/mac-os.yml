@@ -53,7 +53,7 @@ jobs:
           ls -all
 
       - name: Upload project (excluding node_modules)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: full-project-no-node_modules
           path: |
