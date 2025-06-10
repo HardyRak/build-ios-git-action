@@ -12,12 +12,6 @@ export const config: WebdriverIO.Config = {
   logLevel: 'info' as const,
   capabilities: [
       {
-          'platformName': 'Android',
-          'appium:automationName': 'UiAutomator2',
-          'appium:deviceName': 'Android',
-          'appium:app': 'http://d22ahpsrpwd78i.cloudfront.net/dev/qolee-dev-latest.apk',
-      },
-      {
         platformName: 'iOS',
         'appium:automationName': 'XCUITest',
         'appium:deviceName': 'iPhone 15',
