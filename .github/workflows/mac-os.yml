@@ -32,7 +32,7 @@ jobs:
 
       - name: Install CocoaPods dependencies
         run: |
-          cd ios
+          cd ios/App
           pod install
 
       - name: Build iOS app with xcodebuild
