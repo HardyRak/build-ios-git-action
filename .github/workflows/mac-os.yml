@@ -138,11 +138,6 @@ jobs:
             ios/App/build_logs/
           if-no-files-found: warn
 
-      - name: Log .app path for Appium
-        run: |
-          echo "Chemin de l'app iOS compilée :"
-          find "$(pwd)/ios/App/DerivedData/Build/Products" -name "*.app"
-
       - name: Boot iOS Simulator
         run: |
           xcrun simctl boot "iPhone 15"

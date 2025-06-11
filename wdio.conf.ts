@@ -1,7 +1,7 @@
 import path from 'path';
 
 const appPath = path.resolve(
-  '/Users/runner/work/build-ios-git-action/build-ios-git-action/ios/App/DerivedData/Build/Products/Release-iphonesimulator/App.app'
+  './ios/App/DerivedData/Build/Products/Release-iphoneos/App.app'
 );
 
 export const config: WebdriverIO.Config = {
